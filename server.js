@@ -8,7 +8,7 @@ const routes = require("./routes");
 routes(app);
 
 // catch all paths that weren't found in routes
-app.post("*", (req, res) => {
+app.all("*", (req, res) => {
 	res.status(404);
 });
 
