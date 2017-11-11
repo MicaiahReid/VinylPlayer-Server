@@ -15,4 +15,6 @@ app.all("*", (req, res) => {
 	res.status(404);
 });
 
-app.listen(process.env.POR || 3001);
+app.listen(process.env.PORT || 3001, () => {
+	console.log("App started and listening on port " + (process.env.PORT || 3001));
+});

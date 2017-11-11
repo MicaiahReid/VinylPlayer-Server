@@ -10,13 +10,16 @@ module.exports = (app) => {
 	});
 
 	app.post("/records/search/:name", (req, res) => {
+		console.log("Made it to route /records/search/:name");
 		const recordName = req.params.name;
+		console.log("Record name sent was: " + recordName);
 		pool.query("SELECT id, artist_id, name FROM records WHERE name LIKE $1", [recordName], (error, results) => {
 			if(error) {
 				console.log(error.message);
 				res.send(error);
 			}
 			else {
+				console.log("Results found: " + JSON.stringify(results.rows));
 				res.send(results.rows);
 			}
 		})
