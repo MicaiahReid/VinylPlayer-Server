@@ -20,6 +20,7 @@
   "dependencies": {
     "async": "^2.6.0",
     "body-parser": "^1.18.2",
+    "disconnect": "^1.2.1",
     "easy-pbkdf2": "^0.1.2",
     "eslint": "^4.11.0",
     "eslint-config-google": "^0.9.1",
