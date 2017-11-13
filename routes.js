@@ -1,9 +1,9 @@
 "use strict";
 
 const pool = require("./lib/db");
+const auth = require("./lib/routes/auth");
 
 module.exports = (app) => {
-
 	app.post("/records/:id", (req, res) => {
 		const recordId = req.params.id;
 		res.send(recordId);
@@ -22,6 +22,21 @@ module.exports = (app) => {
 				console.log("Results found: " + JSON.stringify(results.rows));
 				res.send(results.rows);
 			}
-		})
+		});
 	});
-}
+
+	app.post("/login", (req, res) => {
+		auth.authenticateUser(req, res, (valid) => {
+			if(!valid) {
+				res.send("Invalid Credentials");
+			}
+			else {
+				res.send("User Authenticated");
+			}
+		});
+	});
+
+	app.post("/createUser", (req, res) => {
+		auth.createUser(req, res);
+	});
+};
