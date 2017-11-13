@@ -41,6 +41,7 @@
 		"v8-func-inline/v8-func-inline" : [1, 10000],
 		"guard-for-in": 0,
 		"linebreak-style": ["error", "windows"],
-		"require-jsdoc": 0 
+		"require-jsdoc": 0,
+		"no-tabs": "off"
 	}
 }
