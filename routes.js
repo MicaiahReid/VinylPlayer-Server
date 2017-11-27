@@ -26,6 +26,9 @@ module.exports = (app) => {
 		discogs.searchDiscogs(req, res);
 	});
 
+	app.post("/getAlbumInfo", (req, res) => {
+		discogs.getAlbumInfo(req, res);
+	});
 	app.post("/search/:id", (req, res) => {
 
 	});
