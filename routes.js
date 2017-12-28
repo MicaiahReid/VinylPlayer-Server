@@ -2,48 +2,71 @@
 
 const auth = require("./lib/routes/auth");
 const discogs = require("./lib/routes/discogs");
+const catalog = require("./lib/routes/catalog");
+
+const isAuthenticated = (req, callback) => {
+	const userId = req.cookies["_vinylPlayer_userId"];
+	const sessionId = req.cookies["_vinylPlayer_sessionId"];
+	if(typeof sessionId !== "undefined" && sessionId !== "" && typeof userId !== "undefined" && userId !== "") {
+		auth.isAuthenticated(sessionId, userId, (error, exists) => {
+			callback(error, exists);
+		});
+	}
+	else {
+		callback(null, false);
+	}
+};
+
+const continueIfAuthenticated = (req, res, next) => {
+	isAuthenticated(req, (error, authenticated) => {
+		if(error) {
+			res.status(400).send("not logged in");
+		}
+		else if(authenticated) {
+			next();
+		}
+		else {
+			res.status(400).send("not logged in");
+		}
+	});
+};
 
 module.exports = (app) => {
-	app.post("/records/:id", (req, res) => {
+	app.post("/records/:id", continueIfAuthenticated, (req, res) => {
 		const recordId = req.params.id;
 		res.send(recordId);
 	});
 
-	app.post("/search", (req, res) => {
-		// console.log("Made it to route /records/search/:name");
-		// const recordName = req.params.name;
-		// console.log("Record name sent was: " + recordName);
-		// pool.query("SELECT id, artist_id, name FROM records WHERE name LIKE $1", [recordName], (error, results) => {
-		// 	if(error) {
-		// 		console.log(error.message);
-		// 		res.send(error);
-		// 	}
-		// 	else {
-		// 		console.log("Results found: " + JSON.stringify(results.rows));
-		// 		res.send(results.rows);
-		// 	}
-		// });
+	app.post("/search", continueIfAuthenticated, (req, res) => {
 		discogs.searchDiscogs(req, res);
 	});
 
-	app.post("/getAlbumInfo", (req, res) => {
-		discogs.getAlbumInfo(req, res);
+	app.post("/getAlbumInfo", continueIfAuthenticated, (req, res) => {
+		discogs.getAlbumInfo(req, res, (error, album) => {
+			if(error) {
+				res.status(500).send(error);
+			}
+			else {
+				res.send(album);
+			}
+		});
 	});
-	app.post("/search/:id", (req, res) => {
+	app.post("/search/:id", continueIfAuthenticated, (req, res) => {
 
 	});
 	app.post("/login", (req, res) => {
-		auth.authenticateUser(req, res, (valid) => {
-			if(!valid) {
-				res.send("Invalid Credentials");
-			}
-			else {
-				res.send("User Authenticated");
-			}
-		});
+		auth.authenticateUser(req, res);
 	});
 
 	app.post("/createUser", (req, res) => {
 		auth.createUser(req, res);
+	});
+
+	app.post("/catalog", continueIfAuthenticated, (req, res) => {
+		catalog.getCatalog(req, res);
+	});
+
+	app.post("/addAlbum", continueIfAuthenticated, (req, res) => {
+		catalog.addAlbum(req, res);
 	});
 };
