@@ -12,6 +12,7 @@ app.use(errorHandler({"dumpExceptions": true, "showStack": true}));
 app.use(bodyParser.urlencoded({"extended": true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.disable("x-powered-by");
 
 routes(app);
 
