@@ -65,8 +65,8 @@ module.exports = (app) => {
 			else {
 				auth.authenticateUser(req, res);
 			}
-		}
-	);
+		})
+	});
 
 	app.post("/createUser", (req, res) => {
 		auth.createUser(req, res);
