@@ -55,8 +55,18 @@ module.exports = (app) => {
 
 	});
 	app.post("/login", (req, res) => {
-		auth.authenticateUser(req, res);
-	});
+		isAuthenticated(req, (error, exists) => {
+			if(error) {
+				res.status(500).send(error);
+			}
+			else if(exists) {
+				res.status(202).send("already logged in");
+			}
+			else {
+				auth.authenticateUser(req, res);
+			}
+		}
+	);
 
 	app.post("/createUser", (req, res) => {
 		auth.createUser(req, res);
