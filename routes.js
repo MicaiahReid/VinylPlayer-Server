@@ -51,9 +51,11 @@ module.exports = (app) => {
 			}
 		});
 	});
+
 	app.post("/search/:id", continueIfAuthenticated, (req, res) => {
 
 	});
+
 	app.post("/login", (req, res) => {
 		isAuthenticated(req, (error, exists) => {
 			if(error) {
@@ -65,7 +67,21 @@ module.exports = (app) => {
 			else {
 				auth.authenticateUser(req, res);
 			}
-		})
+		});
+	});
+
+	app.post("/logout", (req, res) => {
+		isAuthenticated(req, (error, exists) => {
+			if(error) {
+				res.status(500).send(error);
+			}
+			else if(!exists) {
+				res.status(202).send("not logged in");
+			}
+			else {
+				auth.deleteSession(req, res);
+			}
+		});
 	});
 
 	app.post("/createUser", (req, res) => {
