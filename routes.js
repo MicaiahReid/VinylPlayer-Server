@@ -107,4 +107,8 @@ module.exports = (app) => {
 	app.post("/addAlbum", continueIfAuthenticated, (req, res) => {
 		catalog.addAlbum(req, res);
 	});
+
+	app.post("/jobNimbusTest", (req, res) => {
+		console.log(req);
+	});
 };
