@@ -43,6 +43,7 @@ module.exports = (app) => {
 	});
 
 	app.post("/searchImage", continueIfAuthenticated, (req, res) => {
+		const image = req.image;
 		const imageUrl = req.body.image;
 		const process = spawn("python", ["./lib/bin/main.py", imageUrl]);
 		process.stdout.on("data", (data) => {
