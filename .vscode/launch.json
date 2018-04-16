@@ -24,6 +24,21 @@
             "request": "attach",
             "name": "Attach to Process",
             "port": 5000
+        },
+        {
+            "name": "Python: OCR",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceRoot}/lib/bin/ocr.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceRoot}/lib/bin",
+            "debugOptions": [ "DebugStdLib" ]
+        },
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}"
         }
     ]
 }

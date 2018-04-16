@@ -3,14 +3,10 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
-img_height = 1024
-img_width = 512
 minArea = 128
 maxArea = 6144
 
-def segment(file):
-    print("File: " + file)
-    img = cv2.imread(file)
+def segment(img, img_height, img_width):
     img = cv2.resize(img, (img_height, img_width))
     
     rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -18,7 +14,7 @@ def segment(file):
     gray = cv2.fastNlMeansDenoising(gray, 3, 7, 21)
     
     if img is None:
-        print("File " + file + " cannot be opened")
+        print("Image is null")
         return
     
     print("Original:")
@@ -96,4 +92,4 @@ def drawBoundingBox(img, contours):
     plt.axis("off")
     plt.imshow(img)
     plt.show()
-    return img,  
+    return img  

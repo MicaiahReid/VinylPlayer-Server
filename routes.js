@@ -4,6 +4,7 @@ const auth = require("./lib/routes/auth");
 const discogs = require("./lib/routes/discogs");
 const catalog = require("./lib/routes/catalog");
 const spawn = require("child_process").spawn;
+const fs = require("fs");
 
 const isAuthenticated = (req, callback) => {
 	const userId = req.cookies["_vinylPlayer_userId"];
@@ -32,6 +33,7 @@ const continueIfAuthenticated = (req, res, next) => {
 	});
 };
 
+
 module.exports = (app) => {
 	app.post("/records/:id", continueIfAuthenticated, (req, res) => {
 		const recordId = req.params.id;
@@ -42,15 +44,39 @@ module.exports = (app) => {
 		discogs.searchDiscogs(req, res);
 	});
 
-	app.post("/searchImage", continueIfAuthenticated, (req, res) => {
-		const image = req.image;
-		const imageUrl = req.body.image;
-		const process = spawn("python", ["./lib/bin/main.py", imageUrl]);
-		process.stdout.on("data", (data) => {
-			data = JSON.parse(String.fromCharCode.apply(null, data));
-			req.body.artist = data.artist;
-			req.body.album = data.album;
-			discogs.searchDiscogs(req, res);
+	app.post("/searchImage", (req, res) => {
+		let encodedImage = req.body;
+		encodedImage = JSON.stringify(encodedImage);
+		// encodedImage = encodedImage.substring(1, encodedImage.length - 2)
+		let decodedImage = new Buffer(encodedImage, 'base64');
+		fs.writeFile("C:/Users/jose.medina/Downloads/test.png", decodedImage, function(err) {
+			if(err) { console.log(err); }
+		
+			console.log("The file was saved!");
+		});
+
+		let img_height = 512;
+		let img_width = 1024;
+
+		const process = spawn("python", ["./lib/bin/ocr.py", encodedImage, img_height, img_width]);
+		// process.stdout.on("data", (data) => {
+		// 	data = JSON.parse(String.fromCharCode.apply(null, data));
+		// 	print(data);
+		// 	// req.body.artist = data.artist;
+		// 	// req.body.album = data.album;
+		// 	// discogs.searchDiscogs(req, res);
+		// });
+
+		process.stdout.on('data', (data) => {
+			console.log(`stdout: ${data}`);
+		});
+		  
+		process.stderr.on('data', (data) => {
+			console.log(`stderr: ${data}`);
+		});
+		
+		process.on('close', (code) => {
+			console.log(`child process exited with code ${code}`);
 		});
 	});
 
