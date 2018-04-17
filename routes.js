@@ -3,6 +3,7 @@
 const auth = require("./lib/routes/auth");
 const discogs = require("./lib/routes/discogs");
 const catalog = require("./lib/routes/catalog");
+const spawn = require("child_process").spawn;
 
 const isAuthenticated = (req, callback) => {
 	const userId = req.cookies["_vinylPlayer_userId"];
@@ -41,6 +42,18 @@ module.exports = (app) => {
 		discogs.searchDiscogs(req, res);
 	});
 
+	app.post("/searchImage", continueIfAuthenticated, (req, res) => {
+		const image = req.image;
+		const imageUrl = req.body.image;
+		const process = spawn("python", ["./lib/bin/main.py", imageUrl]);
+		process.stdout.on("data", (data) => {
+			data = JSON.parse(String.fromCharCode.apply(null, data));
+			req.body.artist = data.artist;
+			req.body.album = data.album;
+			discogs.searchDiscogs(req, res);
+		});
+	});
+
 	app.post("/getAlbumInfo", continueIfAuthenticated, (req, res) => {
 		discogs.getAlbumInfo(req, res, (error, album) => {
 			if(error) {
@@ -51,9 +64,11 @@ module.exports = (app) => {
 			}
 		});
 	});
+
 	app.post("/search/:id", continueIfAuthenticated, (req, res) => {
 
 	});
+
 	app.post("/login", (req, res) => {
 		isAuthenticated(req, (error, exists) => {
 			if(error) {
@@ -65,8 +80,22 @@ module.exports = (app) => {
 			else {
 				auth.authenticateUser(req, res);
 			}
-		}
-	);
+		});
+	});
+
+	app.post("/logout", (req, res) => {
+		isAuthenticated(req, (error, exists) => {
+			if(error) {
+				res.status(500).send(error);
+			}
+			else if(!exists) {
+				res.status(202).send("not logged in");
+			}
+			else {
+				auth.deleteSession(req, res);
+			}
+		});
+	});
 
 	app.post("/createUser", (req, res) => {
 		auth.createUser(req, res);
@@ -78,5 +107,9 @@ module.exports = (app) => {
 
 	app.post("/addAlbum", continueIfAuthenticated, (req, res) => {
 		catalog.addAlbum(req, res);
+	});
+
+	app.post("/jobNimbusTest", (req, res) => {
+		console.log(req);
 	});
 };
