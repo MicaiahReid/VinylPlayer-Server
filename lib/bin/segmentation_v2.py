@@ -113,17 +113,19 @@ def filter_contours_image_v2(img, contours, hierarchy, min_area):
         filtered_contours.append(contour)
         cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),2)
         
-    # plt.axis("off")
-    # plt.imshow(img)
-    # plt.show()
+    plt.axis("off")
+    plt.imshow(img)
+    plt.show()
     return img, filtered_contours
 
 def find_contours_image_v2(img, rgb, min_area):
     image2, contours, hierarchy = cv2.findContours(img.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     cv2.drawContours(img, contours, -1, (0,255,0), 4)
-    
+    if contours is None:
+        return img, None
+
     rgb, contours = filter_contours_image_v2(rgb, contours, hierarchy, min_area)
-#    contours = sort_contours_image_v2(contours)
+    # contours = sort_contours_image_v2(contours)
     return img, contours
 
 def segment_using_contours_v2(img, contours):
@@ -138,3 +140,25 @@ def segment_using_contours_v2(img, contours):
         
         segments.append(segment)   
     return segments
+
+def sort_contours_image_v2(contours, method="left-to-right"):
+    reverse = False
+    i = 0
+    
+	# handle if we need to sort in reverse
+    if method == "right-to-left" or method == "bottom-to-top":
+        reverse = True
+ 
+	# handle if we are sorting against the y-coordinate rather than
+	# the x-coordinate of the bounding box
+    if method == "top-to-bottom" or method == "bottom-to-top":
+        i = 1
+ 
+	# construct the list of bounding boxes and sort them from top to bottom
+    boundingBoxes = [cv2.boundingRect(contour) for contour in contours]
+    if len(boundingBoxes) != len(contours):
+        return None
+
+    contours, boundingBoxes = zip(*sorted(zip(contours, boundingBoxes), key=lambda b:b[1][i], reverse=reverse))
+
+    return list(contours)

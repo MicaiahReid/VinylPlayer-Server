@@ -46,9 +46,9 @@ module.exports = (app) => {
 
 	app.post("/searchImage", (req, res) => {
 		let encodedImage = req.body.image;
-		encodedImage = encodedImage.substring(2, encodedImage.length - 5);
-		let delimitedEncodeImage = encodedImage.split(" ");
-		encodedImage = delimitedEncodeImage.join("");
+		// encodedImage = encodedImage.substring(2, encodedImage.length - 5);
+		// let delimitedEncodeImage = encodedImage.split(" ");
+		// encodedImage = delimitedEncodeImage.join("");
 
 		let decodedImage = new Buffer(encodedImage, 'base64');
 
@@ -60,14 +60,13 @@ module.exports = (app) => {
 			console.log("The file was saved!");
 		});
 
-		// let img_height = 512;
-		// let img_width = 1024;
-
-		const process = spawn("python", ["./lib/bin/ocr.py", encodedImage]);
+		const process = spawn("python", ["./lib/bin/ocr.py", "./lib/bin/img/original.JPG"]);
 		process.stdout.on("data", (data) => {
-			data = JSON.parse(String.fromCharCode.apply(null, data));
-			print(data);
-			res.send(resultsByArtist)
+			console.log(data)
+			// data = JSON.parse(String.fromCharCode.apply(null, data));
+			// console.log(data.data);
+			res.send("worddddd")
+			
 
 
 			// req.body.artist = data.artist;

@@ -6,7 +6,8 @@ from collections import Counter
 import string
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-current_directory = os.getcwd()
+# current_directory = os.getcwd()
+current_directory = os.path.dirname(os.path.realpath(__file__))
 current_directory = current_directory.replace('\\','/')
 
 def test(x_data):
@@ -32,12 +33,12 @@ def test(x_data):
         print(current_directory)
         meta_graph_path = current_directory + "/model/model.ckpt.meta"
         checkpoint_path = current_directory + "/model/"
-        # print("Meta Graph Path: " + meta_graph_path)
-        # print("Checkpoint Path: " + checkpoint_path)
+        print("Meta Graph Path: " + meta_graph_path)
+        print("Checkpoint Path: " + checkpoint_path)
 
         new_saver = tf.train.import_meta_graph(meta_graph_path)
         new_saver.restore(sess, tf.train.latest_checkpoint(checkpoint_path))
-        # print("Model restored.")
+
         graph = tf.get_default_graph()
         logits = graph.get_tensor_by_name("logits:0")
         x = graph.get_tensor_by_name("samples:0")
