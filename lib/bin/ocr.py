@@ -11,7 +11,7 @@ import io
 seg_img_width = 1024
 seg_img_height = 512
 
-def ocr(img, img_height, img_width, file):
+def ocr(img, img_height, img_width):
     letters = []
     # segment image into word(s) 
     # segment word(s) into letters
@@ -35,17 +35,18 @@ if len(sys.argv) <= 1:
     # img = Image.open(io.BytesIO(img))
     img = cv2.imread(file)
 else:
-    file = sys.argv[1]
-    img = cv2.imread(file)
-    img_height = sys.argv[2]
-    img_width = sys.argv[3]
+    encodedString = sys.argv[1]
+    img = base64.b64decode(encodedString)
+    img = Image.open(io.BytesIO(img))
+    img = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
 
 if img is None:
-    print(file)
+    print("No image")
     sys.stdout.flush()
     sys.exit()
 else:
-    data = ocr(img, seg_img_height, seg_img_width, file)
-    print("Hello from the ocr file")
+    data = ocr(img, seg_img_height, seg_img_width)
+    data = '{"data": "' + data + '"}'
+    print(data)
     sys.stdout.flush()
     sys.exit()

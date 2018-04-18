@@ -49,7 +49,9 @@ module.exports = (app) => {
 		encodedImage = encodedImage.substring(2, encodedImage.length - 5);
 		let delimitedEncodeImage = encodedImage.split(" ");
 		encodedImage = delimitedEncodeImage.join("");
+
 		let decodedImage = new Buffer(encodedImage, 'base64');
+
 		fs.writeFile("./lib/bin/img/original.JPG", decodedImage, function(err) {
 			if(err) { 
 				console.log(err); 
@@ -58,17 +60,20 @@ module.exports = (app) => {
 			console.log("The file was saved!");
 		});
 
-		let img_height = 512;
-		let img_width = 1024;
+		// let img_height = 512;
+		// let img_width = 1024;
 
-		const process = spawn("python", ["./lib/bin/ocr.py", "./img/original.JPG", img_height, img_width]);
-		// process.stdout.on("data", (data) => {
-		// 	data = JSON.parse(String.fromCharCode.apply(null, data));
-		// 	print(data);
-		// 	// req.body.artist = data.artist;
-		// 	// req.body.album = data.album;
-		// 	// discogs.searchDiscogs(req, res);
-		// });
+		const process = spawn("python", ["./lib/bin/ocr.py", encodedImage]);
+		process.stdout.on("data", (data) => {
+			data = JSON.parse(String.fromCharCode.apply(null, data));
+			print(data);
+			res.send(resultsByArtist)
+
+
+			// req.body.artist = data.artist;
+			// req.body.album = data.album;
+			// discogs.searchDiscogs(req, res);
+		});
 
 		process.stdout.on('data', (data) => {
 			console.log(`stdout: ${data}`);

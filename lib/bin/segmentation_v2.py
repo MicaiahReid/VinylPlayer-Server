@@ -96,7 +96,6 @@ def erosion_image_v2(img, kernel):
 def filter_contours_image_v2(img, contours, hierarchy, min_area):
     print("Filter Contours Image")
     filtered_contours = []
-#    print(hierarchy)
     if hierarchy is None:
         return img, None
     
@@ -114,9 +113,9 @@ def filter_contours_image_v2(img, contours, hierarchy, min_area):
         filtered_contours.append(contour)
         cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),2)
         
-    plt.axis("off")
-    plt.imshow(img)
-    plt.show()
+    # plt.axis("off")
+    # plt.imshow(img)
+    # plt.show()
     return img, filtered_contours
 
 def find_contours_image_v2(img, rgb, min_area):
