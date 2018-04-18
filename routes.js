@@ -45,12 +45,15 @@ module.exports = (app) => {
 	});
 
 	app.post("/searchImage", (req, res) => {
-		let encodedImage = req.body;
-		encodedImage = JSON.stringify(encodedImage);
-		// encodedImage = encodedImage.substring(1, encodedImage.length - 2)
+		let encodedImage = req.body.image;
+		encodedImage = encodedImage.substring(2, encodedImage.length - 5);
+		let delimitedEncodeImage = encodedImage.split(" ");
+		encodedImage = delimitedEncodeImage.join("");
 		let decodedImage = new Buffer(encodedImage, 'base64');
-		fs.writeFile("C:/Users/jose.medina/Downloads/test.png", decodedImage, function(err) {
-			if(err) { console.log(err); }
+		fs.writeFile("./lib/bin/img/original.JPG", decodedImage, function(err) {
+			if(err) { 
+				console.log(err); 
+			}
 		
 			console.log("The file was saved!");
 		});
@@ -58,7 +61,7 @@ module.exports = (app) => {
 		let img_height = 512;
 		let img_width = 1024;
 
-		const process = spawn("python", ["./lib/bin/ocr.py", encodedImage, img_height, img_width]);
+		const process = spawn("python", ["./lib/bin/ocr.py", "./img/original.JPG", img_height, img_width]);
 		// process.stdout.on("data", (data) => {
 		// 	data = JSON.parse(String.fromCharCode.apply(null, data));
 		// 	print(data);
