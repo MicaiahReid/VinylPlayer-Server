@@ -41,37 +41,42 @@ module.exports = (app) => {
 	});
 
 	app.post("/search", continueIfAuthenticated, (req, res) => {
-		discogs.searchDiscogs(req, res);
+		discogs.queryDiscogs(req, res);
+		// discogs.searchDiscogs(req, res);
+	});
+
+	app.post("/getTrackList",  (req, res) => {
+		discogs.getTracklist(req, res);
 	});
 
 	app.post("/searchImage", (req, res) => {
-		let encodedImage = req.body.image;
+		// let encodedImage = req.body.image;
 		// encodedImage = encodedImage.substring(2, encodedImage.length - 5);
 		// let delimitedEncodeImage = encodedImage.split(" ");
 		// encodedImage = delimitedEncodeImage.join("");
 
-		let decodedImage = new Buffer(encodedImage, 'base64');
+		// let decodedImage = new Buffer(encodedImage, 'base64');
 
-		fs.writeFile("./lib/bin/img/original.JPG", decodedImage, function(err) {
-			if(err) { 
-				console.log(err); 
-			}
+		// fs.writeFile("./lib/bin/img/original.JPG", decodedImage, function(err) {
+		// 	if(err) { 
+		// 		console.log(err); 
+		// 	}
 		
-			console.log("The file was saved!");
-		});
+		// 	console.log("The file was saved!");
+		// });
 
-		const process = spawn("python", ["./lib/bin/ocr.py", "./lib/bin/img/original.JPG"]);
+		let index = req.body.picturePosition;
+		console.log(index)
+
+		const process = spawn("python", ["./lib/bin/ocr.py", index]);
 		process.stdout.on("data", (data) => {
 			console.log(data)
-			// data = JSON.parse(String.fromCharCode.apply(null, data));
-			// console.log(data.data);
-			res.send("worddddd")
+			data = JSON.parse(String.fromCharCode.apply(null, data));
+			console.log(data.data);
 			
-
-
-			// req.body.artist = data.artist;
-			// req.body.album = data.album;
-			// discogs.searchDiscogs(req, res);
+			req.body.artist = data.artist;
+			req.body.album = data.album;
+			discogs.searchDiscogs(req, res);
 		});
 
 		process.stdout.on('data', (data) => {
