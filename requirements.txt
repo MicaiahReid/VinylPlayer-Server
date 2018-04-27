@@ -155,4 +155,3 @@ prompt-toolkit==1.0.15
 protobuf==3.4.0
 tensorflow==1.7.0
 werkzeug==0.12.2
-win-unicode-console==0.5
