@@ -77,9 +77,7 @@ module.exports = (app) => {
 			console.log(data)
 			data = JSON.parse(String.fromCharCode.apply(null, data));
 			console.log(data.data);
-			
-			req.body.artist = data.artist;
-			req.body.album = data.album;
+			req.body.query = data.query;
 			discogs.searchDiscogs(req, res);
 		});
 
