@@ -49,6 +49,10 @@ module.exports = (app) => {
 		discogs.getTracklist(req, res);
 	});
 
+	app.post("/testPython",  (req, res) => {
+		console.log("Python test");
+	});
+
 	app.post("/searchImage", (req, res) => {
 		// let encodedImage = req.body.image;
 		// encodedImage = encodedImage.substring(2, encodedImage.length - 5);
