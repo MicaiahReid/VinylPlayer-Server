@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-def segment_image_v2(img, img_height=1024, img_width=512, min_contour_area=1200):
-    img = cv2.resize(img, (img_height, img_width))
+def segment_image_v2(img, img_width=1024, img_height=512, min_contour_area=1200):
+    img = cv2.resize(img, (img_width, img_height))
     rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     
@@ -13,8 +13,8 @@ def segment_image_v2(img, img_height=1024, img_width=512, min_contour_area=1200)
     gray = cv2.fastNlMeansDenoising(gray, h=3, templateWindowSize=7, searchWindowSize=21)
     
     if img is None:
-        print("Image is null")
-        return
+        # print("Image is null")
+        return [] 
     
     # print("Original:")
     # plt.imshow(rgb)
@@ -46,7 +46,7 @@ def segment_line_v2(img, img_height=1024, img_width=512, min_contour_area=4096):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     
     if img is None:
-        print("Image is null")
+        # print("Image is null")
         return
     
     # apply thresholding
@@ -58,13 +58,13 @@ def segment_line_v2(img, img_height=1024, img_width=512, min_contour_area=4096):
     eroded = erosion_image_v2(dilated, kernel)
     
      # find contours on image & draw bounding box
-    rgb, contours = find_contours_image_v2(eroded, rgb, min_contour_area)
+    rgb, contours = find_contours_image_v2(eroded, rgb, min_contour_area, sort_top_to_bottom=False)
     segments = segment_using_contours_v2(img, contours)
     return segments
 
 def adaptive_threshold_image_v2(img):
-    print("Image after thresholding:")
     thresh = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 15, 3)
+    # print("Image after thresholding:")
     # plt.axis("off")
     # plt.imshow(thresh, cmap='gray')
     # plt.show()
@@ -72,6 +72,7 @@ def adaptive_threshold_image_v2(img):
 
 def adaptive_threshold_line_v2(img):
     thresh = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 21, 3)
+    # print("Image after thresholding:")
     # plt.axis("off")
     # plt.imshow(thresh, cmap='gray')
     # plt.show()
@@ -94,10 +95,10 @@ def erosion_image_v2(img, kernel):
     return eroded
 
 def filter_contours_image_v2(img, contours, hierarchy, min_area):
-    print("Filter Contours Image")
+    # print("Filter Contours Image")
     filtered_contours = []
     if hierarchy is None:
-        return img, None
+        return img, []
     
     hierarchy = hierarchy[0] # get the actual inner list of hierarchy descriptions
     for i, contour in enumerate(contours):
@@ -112,20 +113,25 @@ def filter_contours_image_v2(img, contours, hierarchy, min_area):
         
         filtered_contours.append(contour)
         cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),2)
-        
-    plt.axis("off")
-    plt.imshow(img)
-    plt.show()
+    # plt.axis("off")
+    # plt.imshow(img)
+    # plt.show()
     return img, filtered_contours
 
-def find_contours_image_v2(img, rgb, min_area):
+def find_contours_image_v2(img, rgb, min_area, sort_top_to_bottom=True):
     image2, contours, hierarchy = cv2.findContours(img.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     cv2.drawContours(img, contours, -1, (0,255,0), 4)
     if contours is None:
-        return img, None
+        return img, []
 
     rgb, contours = filter_contours_image_v2(rgb, contours, hierarchy, min_area)
-    # contours = sort_contours_image_v2(contours)
+    if len(contours) <= 0:
+        return img, []
+    
+    # sort contours 
+    contours = sort_contours_image_v2(contours, method="left-to-right")
+    if sort_top_to_bottom:  
+        contours = sort_contours_image_v2(contours, method="top-to-bottom")
     return img, contours
 
 def segment_using_contours_v2(img, contours):
@@ -156,9 +162,7 @@ def sort_contours_image_v2(contours, method="left-to-right"):
  
 	# construct the list of bounding boxes and sort them from top to bottom
     boundingBoxes = [cv2.boundingRect(contour) for contour in contours]
-    if len(boundingBoxes) != len(contours):
-        return None
-
-    contours, boundingBoxes = zip(*sorted(zip(contours, boundingBoxes), key=lambda b:b[1][i], reverse=reverse))
-
+    contours, boundingBoxes = zip(*sorted(zip(contours, boundingBoxes),
+		key=lambda b:b[1][i], reverse=reverse))
+     
     return list(contours)

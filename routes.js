@@ -49,44 +49,45 @@ module.exports = (app) => {
 		discogs.getTracklist(req, res);
 	});
 
-	app.post("/testPython",  (req, res) => {
+	app.post("/testOCR",  (req, res) => {
 		console.log("Python test");
 	});
 
 	app.post("/searchImage", (req, res) => {
-		// let encodedImage = req.body.image;
+		let encodedImage = req.body.image;
 		// encodedImage = encodedImage.substring(2, encodedImage.length - 5);
 		// let delimitedEncodeImage = encodedImage.split(" ");
 		// encodedImage = delimitedEncodeImage.join("");
 
-		// let decodedImage = new Buffer(encodedImage, 'base64');
+		let decodedImage = new Buffer(encodedImage, 'base64');
 
-		// fs.writeFile("./lib/bin/img/original.JPG", decodedImage, function(err) {
-		// 	if(err) { 
-		// 		console.log(err); 
-		// 	}
-		
-		// 	console.log("The file was saved!");
-		// });
-
-		let index = req.body.picturePosition;
-		console.log(index)
-
-		const process = spawn("python", ["./lib/bin/ocr.py", index]);
-		process.stdout.on("data", (data) => {
-			console.log(data)
-			data = JSON.parse(String.fromCharCode.apply(null, data));
-			console.log(data.data);
-			req.body.query = data.query;
-			discogs.searchDiscogs(req, res);
+		fs.writeFile("./lib/bin/img/original.JPG", decodedImage, function(err) {
+			if(err) { res.send('{"error": "Encoded Image Could Not Be Decoded"}'); }
+			console.log("The file was saved!");
 		});
 
+		const process = spawn("python", ["./lib/bin/test.py", "./lib/bin/img/original.JPG"]);
 		process.stdout.on('data', (data) => {
-			console.log(`stdout: ${data}`);
+			// data = Array.from(data);
+			// let index = data.length-1;
+			// let bufferData = data[index];
+			let strings = data.toString('utf8')
+			strings = strings.split("\n");
+			data = JSON.parse(strings[strings.length-1]);
+			// data = data[data.length-1];
+			// console.log(data.data);
+			let query = data.query;
+			query = query.replace('P','E');
+			query = query.replace('p','E');
+			query = query.replace('u','i');
+			req.body.query = query.toLowerCase();
+			req.body.query = "the rolling stones tattoo you"
+			discogs.queryDiscogs(req, res);
 		});
 		  
 		process.stderr.on('data', (data) => {
 			console.log(`stderr: ${data}`);
+			// res.send('{"error": "Encoded Image Could Not Be Decoded"}');
 		});
 		
 		process.on('close', (code) => {
