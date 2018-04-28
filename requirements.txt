@@ -1,4 +1,3 @@
-[packages]
 bleach=1.5.0=py35_0
 certifi=2016.2.28=py35_0
 colorama=0.3.9=py35_0
