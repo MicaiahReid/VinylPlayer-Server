@@ -10,6 +10,8 @@ const routes = require("./routes");
 
 app.use(errorHandler({"dumpExceptions": true, "showStack": true}));
 app.use(bodyParser.urlencoded({"extended": true}));
+app.use(express.json({limit: '100mb'}));
+app.use(express.urlencoded({limit: '100mb'}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.disable("x-powered-by");
