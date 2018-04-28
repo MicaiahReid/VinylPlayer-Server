@@ -1,3 +1,4 @@
+python : 3.6.2
 dammit==0.2.5
 matplotlib==2.0.2
 numpy==1.13.1
