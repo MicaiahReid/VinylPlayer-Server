@@ -8,4 +8,3 @@ pillow==4.2.1
 pylint==1.7.2
 protobuf==3.4.0
 tensorflow==1.7.0
-opencv-python==3.4.0.12
