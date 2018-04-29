@@ -12,9 +12,6 @@ app.use(errorHandler({"dumpExceptions": true, "showStack": true}));
 app.use(bodyParser.json({limit: '100MB'}));
 app.use(bodyParser.urlencoded({limit: '100MB', extended: true}));
 
-// app.use(bodyParser.urlencoded({"extended": true}));
-// app.use(bodyParser.json());
-
 app.use(cookieParser());
 app.disable("x-powered-by");
 app.use((req, res, next) => {

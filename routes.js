@@ -61,12 +61,12 @@ module.exports = (app) => {
 
 		let decodedImage = new Buffer(encodedImage, 'base64');
 
-		fs.writeFile("./lib/bin/img/original.JPG", decodedImage, function(err) {
+		fs.writeFile("./lib/bin/img/original.JPG", encodedImage, function(err) {
 			if(err) { res.send('{"error": "Encoded Image Could Not Be Decoded"}'); }
 			console.log("The file was saved!");
 		});
 
-		const process = spawn("python", ["./lib/bin/test.py", "./lib/bin/img/original.JPG"]);
+		const process = spawn("python", ["./test.py", "./lib/bin/img/original.JPG"]);
 		process.stdout.on('data', (data) => {
 			// data = Array.from(data);
 			// let index = data.length-1;
