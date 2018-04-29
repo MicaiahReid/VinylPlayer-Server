@@ -3,7 +3,6 @@ url = "https://pypi.python.org/simple"
 name = "seniordesign_python"
 
 [requires]
-python_version = "2.7"
 
 [packages]
 matplotlib = "*"
