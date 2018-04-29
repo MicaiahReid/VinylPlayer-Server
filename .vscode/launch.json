@@ -29,9 +29,9 @@
             "name": "Python: OCR",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceRoot}/lib/bin/ocr.py",
+            "program": "${workspaceRoot}/ocr.py",
             "console": "integratedTerminal",
-            "cwd": "${workspaceRoot}/lib/bin",
+            "cwd": "${workspaceRoot}",
             "debugOptions": [ "DebugStdLib" ]
         },
         {

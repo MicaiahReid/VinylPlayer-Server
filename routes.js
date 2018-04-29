@@ -33,6 +33,17 @@ const continueIfAuthenticated = (req, res, next) => {
 	});
 };
 
+const capitalizeFirstLetters = (words) => {
+	words = words.split(" ");
+	let new_words = []
+	for(var i=0; i<words.length; i++){
+		let new_word = words[i].charAt(0).toUpperCase() + words[i].substring(1);
+		new_words.push(new_word);
+	}
+
+	return new_words.join(" ");
+}
+
 
 module.exports = (app) => {
 	app.post("/records/:id", continueIfAuthenticated, (req, res) => {
@@ -55,43 +66,45 @@ module.exports = (app) => {
 
 	app.post("/searchImage", (req, res) => {
 		let encodedImage = req.body.image;
-		// encodedImage = encodedImage.substring(2, encodedImage.length - 5);
-		// let delimitedEncodeImage = encodedImage.split(" ");
-		// encodedImage = delimitedEncodeImage.join("");
+		let decodedImage =  Buffer.from(encodedImage, 'base64');
 
-		let decodedImage = new Buffer(encodedImage, 'base64');
-
-		fs.writeFile("./lib/bin/img/original.JPG", encodedImage, function(err) {
+		fs.writeFile("./lib/bin/img/original.jpg", decodedImage, function(err) {
 			if(err) { res.send('{"error": "Encoded Image Could Not Be Decoded"}'); }
 			console.log("The file was saved!");
-		});
+			const process = spawn("python", ["./ocr.py"]);
+			process.stdout.on('data', (data) => {
+				// data = Array.from(data);
+				// let index = data.length-1;
+				// let bufferData = data[index];
+				let strings = data.toString('utf8')
+				strings = strings.split("\n");
+				let networkOutput = strings[strings.length-2]
+				if(networkOutput == null || networkOutput == "") {
+					res.send();
+				}
+				data = JSON.parse(networkOutput);
+				// data = data[data.length-1];
+				// console.log(data.data);
+				let query = data.query;
+				query = query.replace('P','E');
+				query = query.replace('p','E');
+				query = query.replace('u','i');
+				query = query.toLowerCase();
+				query = capitalizeFirstLetters(query);
 
-		const process = spawn("python", ["./test.py", "./lib/bin/img/original.JPG"]);
-		process.stdout.on('data', (data) => {
-			// data = Array.from(data);
-			// let index = data.length-1;
-			// let bufferData = data[index];
-			let strings = data.toString('utf8')
-			strings = strings.split("\n");
-			data = JSON.parse(strings[strings.length-1]);
-			// data = data[data.length-1];
-			// console.log(data.data);
-			let query = data.query;
-			query = query.replace('P','E');
-			query = query.replace('p','E');
-			query = query.replace('u','i');
-			req.body.query = query.toLowerCase();
-			req.body.query = "the rolling stones tattoo you"
-			discogs.queryDiscogs(req, res);
-		});
-		  
-		process.stderr.on('data', (data) => {
-			console.log(`stderr: ${data}`);
-			// res.send('{"error": "Encoded Image Could Not Be Decoded"}');
-		});
-		
-		process.on('close', (code) => {
-			console.log(`child process exited with code ${code}`);
+				req.body.query = query;
+
+				discogs.queryDiscogs(req, res);
+			});
+			
+			process.stderr.on('data', (data) => {
+				console.log(`stderr: ${data}`);
+				// res.send('{"error": "Encoded Image Could Not Be Decoded"}');
+			});
+			
+			process.on('close', (code) => {
+				console.log(`child process exited with code ${code}`);
+			});
 		});
 	});
 

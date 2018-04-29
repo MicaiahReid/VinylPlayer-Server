@@ -19,8 +19,8 @@ def test(words):
     with tf.Session() as sess:
         # Restore variables from disk.
         print(current_directory)
-        meta_graph_path = current_directory + "/model/model.ckpt.meta"
-        checkpoint_path = current_directory + "/model/"
+        meta_graph_path = current_directory + "/lib/bin/model/model.ckpt.meta"
+        checkpoint_path = current_directory + "/lib/bin/model/"
         print("Meta Graph Path: " + meta_graph_path)
         print("Checkpoint Path: " + checkpoint_path)
         saver = tf.train.import_meta_graph(meta_graph_path)
@@ -40,7 +40,8 @@ def test(words):
                 # plt.axis("off")
                 # plt.show()
                 characters[i] = np.reshape(characters[i], (characters[i].shape[0], characters[i].shape[1], 1))
-            
+            if(len(characters) <= 0):
+                continue
             # feed characters of each word into network
             feed_dict = {x: characters}
             output = sess.run(logits, feed_dict=feed_dict)

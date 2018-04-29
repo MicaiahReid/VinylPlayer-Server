@@ -29,7 +29,7 @@
             "name": "Python: OCR",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceRoot}/test.py",
+            "program": "${workspaceRoot}/ocr.py",
             "console": "integratedTerminal",
             "cwd": "${workspaceRoot}"
         },

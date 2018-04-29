@@ -2,8 +2,13 @@
 import cv2
 import numpy as np
 import os
+import matplotlib as plt
 
 def segment_image_v2(img, img_width=1024, img_height=512, min_contour_area=1200):
+    height, width, channels = img.shape
+    start_height = int(height - height*.8)
+    end_height = int(height*.8)
+    img = img[start_height:end_height, :]
     img = cv2.resize(img, (img_width, img_height))
     rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -15,10 +20,10 @@ def segment_image_v2(img, img_width=1024, img_height=512, min_contour_area=1200)
         # print("Image is null")
         return [] 
     
-    # print("Original:")
-    # plt.imshow(rgb)
-    # plt.axis("off")
-    # plt.show()
+    print("Original:")
+    plt.imshow(rgb)
+    plt.axis("off")
+    plt.show()
     
     # convert to grayscale
     # print("Image after grayscale:")

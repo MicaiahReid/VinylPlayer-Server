@@ -41,6 +41,9 @@ def test(words):
                 # plt.show()
                 characters[i] = np.reshape(characters[i], (characters[i].shape[0], characters[i].shape[1], 1))
             
+            if(len(characters) <= 0):
+                continue
+                
             # feed characters of each word into network
             feed_dict = {x: characters}
             output = sess.run(logits, feed_dict=feed_dict)

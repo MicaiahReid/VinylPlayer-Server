@@ -1,46 +1,50 @@
 # pylint: skip-file
 import sys
 import segmentation_v2 as s
-from network import test
+import network
 import dataset as D
 import cv2
 from PIL import Image
 import base64 
 import io
 import numpy as np
-
-seg_img_width = 1024
-seg_img_height = 512
+import os
+current_directory = os.path.dirname(os.path.realpath(__file__))
+current_directory = current_directory.replace('\\','/')
 
 def ocr(img, img_height, img_width):
-    letters = []
-    # segment image into word(s) 
-    # segment word(s) into letters
+    words = []
+
+    # 1st: segment images containing word(s) from image
+    # 2nd: segment images containing single characters from word(s)
     lines = s.segment_image_v2(img, img_width, img_height)
-    print("Segmenting Lines")
     for line in lines:
-        print("New Line!")
-        segments = s.segment_line_v2(line, img_width, img_height)
-        if segments is None:
+        line_letters = s.segment_line_v2(line, img_width, img_height)
+        if line_letters is None:
             continue
-        letters.extend(segments)    
-    query = test(letters)
+        words.append(line_letters)
+
+    # get output from character cnn
+    cnn_words = network.test(words);
+    return cnn_words
+
+# test python ocr
+# rotating image is not necessary for test 
+# because it is stored right side up
+def test():
+    img_width = 1024
+    img_height = 512
+    file = current_directory + "/lib/bin/img/original.jpg"
+    img = cv2.imread(file)
+
+    if img is None:
+        query = '{"query": "", "error": "Saved image file could not be opened"}'
+    else:
+        cnn_words = ocr(img, img_height, img_width)
+        query = '{"query": "' + cnn_words + '", "error": ""}'
     return query
 
-def rotate_image(img, angle):
-    img_center = tuple(np.array(img.shape[1::-1]) / 2)
-    rot_mat = cv2.getRotationMatrix2D(img_center, angle, 1.0)
-    result = cv2.warpAffine(img, rot_mat, img.shape[1::-1], flags=cv2.INTER_LINEAR)
-    return result
-
-file = sys.argv[1]
-img = cv2.imread(file)
-
-if img is None:
-    print("Saved image file could not be opened")
-    query = '{"query": ""}'
-else:
-    query = ocr(img, seg_img_height, seg_img_width)
-
+query = test()
 print(query)
-sys.stdout.flush()
+
+   
