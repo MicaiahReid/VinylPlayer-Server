@@ -4,7 +4,6 @@ from collections import Counter
 import string
 import random
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 
 class Dataset(object):
