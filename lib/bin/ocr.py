@@ -47,7 +47,6 @@ def test():
     return query
 
 query = test()
-# print(query)
 sys.stdout.write(query)
 sys.stdout.flush() 
    
