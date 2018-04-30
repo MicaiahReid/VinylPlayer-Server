@@ -78,7 +78,7 @@ module.exports = (app) => {
 				// let bufferData = data[index];
 				let strings = data.toString('utf8')
 				strings = strings.split("\n");
-				let networkOutput = strings[strings.length-2]
+				let networkOutput = strings[strings.length-1]
 				if(networkOutput == null || networkOutput == "") {
 					res.send();
 				}
@@ -86,9 +86,6 @@ module.exports = (app) => {
 				// data = data[data.length-1];
 				// console.log(data.data);
 				let query = data.query;
-				query = query.replace('P','E');
-				query = query.replace('p','E');
-				query = query.replace('u','i');
 				query = query.toLowerCase();
 				query = capitalizeFirstLetters(query);
 

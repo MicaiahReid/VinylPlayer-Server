@@ -16,17 +16,9 @@ def ocr(img, img_height, img_width):
     words = []
 
     # 1st: segment images containing word(s) from image
-    # 2nd: segment images containing single characters from word(s)
-    lines = s.segment_image_v2(img, img_width, img_height)
-    # print("Segmenting Label")
-    for line in lines:
-        line_letters = s.segment_line_v2(line, img_width, img_height)
-        if line_letters is None:
-            continue
-        words.append(line_letters)
-
-    # get output from character cnn
-    cnn_words = network.test(words);
+    characters = s.segment_image_v2(img, img_width, img_height)
+    # 2nd: get output from character cnn
+    cnn_words = network.test(characters);
     return cnn_words
 
 # test python ocr
@@ -35,7 +27,7 @@ def ocr(img, img_height, img_width):
 def test():
     img_width = 1024
     img_height = 512
-    file = current_directory + "/img/original.jpg"
+    file = current_directory + "/img/lg_ron_2.jpg"
     img = cv2.imread(file)
 
     if img is None:

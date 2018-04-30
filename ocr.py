@@ -16,15 +16,9 @@ def ocr(img, img_height, img_width):
     words = []
 
     # 1st: segment images containing word(s) from image
-    # 2nd: segment images containing single characters from word(s)
-    lines = s.segment_image_v2(img, img_width, img_height)
-    for line in lines:
-        line_letters = s.segment_line_v2(line, img_width, img_height)
-        if line_letters is None:
-            continue
-        words.append(line_letters)
+    words = s.segment_image_v2(img, img_width, img_height)
 
-    # get output from character cnn
+    # 2nd: get output from character cnn
     cnn_words = network.test(words);
     return cnn_words
 
@@ -34,10 +28,11 @@ def ocr(img, img_height, img_width):
 def test():
     img_width = 1024
     img_height = 512
-    file = current_directory + "/lib/bin/img/original.jpg"
+    file = current_directory + "/lib/bin/img/lg_ron_2.jpg"
     img = cv2.imread(file)
 
     if img is None:
+        # print("Saved image file could not be opened")
         query = '{"query": "", "error": "Saved image file could not be opened"}'
     else:
         cnn_words = ocr(img, img_height, img_width)
@@ -45,6 +40,6 @@ def test():
     return query
 
 query = test()
-print(query)
-
+sys.stdout.write(query)
+sys.stdout.flush() 
    

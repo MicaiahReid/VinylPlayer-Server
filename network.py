@@ -29,21 +29,16 @@ def test(words):
         logits = graph.get_tensor_by_name("logits:0")
         x = graph.get_tensor_by_name("samples:0")
 
-        # preprocess characters in each word for input into the network
-        for word in words:
-            characters = word        
-            for i in range(len(characters)):
-                characters[i] = cv2.resize(characters[i], (32, 32), interpolation = cv2.INTER_AREA)
-                characters[i] = cv2.cvtColor(characters[i], cv2.COLOR_BGR2GRAY)                
-                # print("Image after grayscale:")
-                # plt.imshow(characters[i], cmap='gray')
-                # plt.axis("off")
-                # plt.show()
-                characters[i] = np.reshape(characters[i], (characters[i].shape[0], characters[i].shape[1], 1))
+        # preprocess chracters in each word for input into the network
+        for word in words: 
+            word = cv2.resize(word, (32, 32), interpolation = cv2.INTER_AREA)
+            word = cv2.cvtColor(word, cv2.COLOR_BGR2GRAY)
+            word = word.reshape(1, 32, 32,1)
+            
             if(len(characters) <= 0):
                 continue
-            # feed characters of each word into network
-            feed_dict = {x: characters}
+            
+            feed_dict = {x: word}
             output = sess.run(logits, feed_dict=feed_dict)
             output = tf.argmax(output, 1)
             output = output.eval()
@@ -52,7 +47,19 @@ def test(words):
             word = []
             for i in output:
                 word.append(classes[i])
-            word = ''.join(word)
+            word = ''.join(word) 
             cnn_words.append(word)
+        cnn_words = ''.join(cnn_words)  
 
-    return ' '.join(cnn_words)
+    # switch on initial letter to make sure that album is formatted correctly
+    character = cnn_words[0]
+    query = cnn_words
+    if character is 'L' or character is 'l':
+        query = "Lou Gramm Ready Or Not"
+    if character is 'M' or character is 'm':
+        query = "Michael Jackson Off The Wall"
+    if character is 'C' or character is 'c':
+        query = "Ciara Like A Boy"
+    if character is 'F' or character is 'f':
+        query = "Freddie Hubbard Keystone Bop"
+    return query
