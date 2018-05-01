@@ -84,6 +84,15 @@ module.exports = (app) => {
 				}
 				try {
 					data = JSON.parse(networkOutput);
+					// data = data[data.length-1];
+					// console.log(data.data);
+					let query = data.query;
+					query = query.toLowerCase();
+					query = capitalizeFirstLetters(query);
+
+					req.body.query = query;
+
+					discogs.queryDiscogs(req, res);
 				} catch (e) {
 					console.log("Not Json. Logging python output");
 					for(var i=0; i<strings.length; i++){
@@ -92,15 +101,6 @@ module.exports = (app) => {
 					res.send();
 				}
 				
-				// data = data[data.length-1];
-				// console.log(data.data);
-				let query = data.query;
-				query = query.toLowerCase();
-				query = capitalizeFirstLetters(query);
-
-				req.body.query = query;
-
-				discogs.queryDiscogs(req, res);
 			});
 			
 			process.stderr.on('data', (data) => {
