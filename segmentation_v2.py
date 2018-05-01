@@ -150,7 +150,7 @@ def filter_contours_image_v2(img, contours, hierarchy, min_area):
         point = [x, y]
         for j in range(len(sorted_points)):
             sorted_point = list(sorted_points[j])
-            if j >= (len(sorted_points)):
+            if j >= (len(filtered_contours)):
                 continue
             if (x == sorted_point[0]) and (y == sorted_point[1]):
                 filtered_contours[j] = contour
