@@ -85,6 +85,10 @@ module.exports = (app) => {
 				try {
 					data = JSON.parse(networkOutput);
 				} catch (e) {
+					console.log("Not Json. Logging python output");
+					for(var i=0; i<strings.length; i++){
+						console.log(strings[i]);
+					}
 					res.send();
 				}
 				
