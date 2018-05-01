@@ -82,7 +82,12 @@ module.exports = (app) => {
 				if(networkOutput == null || networkOutput == "") {
 					res.send();
 				}
-				data = JSON.parse(networkOutput);
+				try {
+					data = JSON.parse(networkOutput);
+				} catch (e) {
+					res.send();
+				}
+				
 				// data = data[data.length-1];
 				// console.log(data.data);
 				let query = data.query;
