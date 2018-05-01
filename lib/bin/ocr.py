@@ -27,7 +27,7 @@ def ocr(img, img_height, img_width):
 def test():
     img_width = 1024
     img_height = 512
-    file = current_directory + "/img/lg_ron_2.jpg"
+    file = current_directory + "/img/ciara.jpg"
     img = cv2.imread(file)
 
     if img is None:

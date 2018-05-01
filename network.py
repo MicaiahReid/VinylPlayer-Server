@@ -56,7 +56,7 @@ def test(words):
     query = cnn_words
     if character is 'L' or character is 'l':
         query = "Lou Gramm Ready Or Not"
-    if character is 'M' or character is 'm':
+    if character is 'O' or character is 'o':
         query = "Michael Jackson Off The Wall"
     if character is 'C' or character is 'c':
         query = "Ciara Like A Boy"

@@ -158,10 +158,13 @@ def filter_contours_image_v2(img, contours, hierarchy, min_area):
     for i, contour in enumerate(contours):
         x,y,w,h = cv2.boundingRect(contour)
         point = [x, y]
+        sp_length = range(len(sorted_points))
         for j in range(len(sorted_points)):
             sorted_point = list(sorted_points[j])
+            if j >= (len(sorted_points)):
+                continue
             if (x == sorted_point[0]) and (y == sorted_point[1]):
-                filtered_contours[j] = contour
+                filtered_contours[j-1] = contour
             
     return img, filtered_contours
 
